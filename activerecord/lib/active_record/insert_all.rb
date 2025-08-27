@@ -113,16 +113,16 @@ module ActiveRecord
         return if model.descends_from_active_record?
 
         sti_type = model.sti_name
-        @inserts = @inserts.map do |insert|
-          insert.reverse_merge(model.inheritance_column.to_s => sti_type)
+        @inserts.each do |insert|
+          insert.reverse_merge!(model.inheritance_column.to_s => sti_type)
         end
       end
 
       def resolve_attribute_aliases
         return unless has_attribute_aliases?(@inserts.first)
 
-        @inserts = @inserts.map do |insert|
-          insert.transform_keys { |attribute| resolve_attribute_alias(attribute) }
+        @inserts.each do |insert|
+          insert.transform_keys! { |attribute| resolve_attribute_alias(attribute) }
         end
 
         @update_only = Array(@update_only).map { |attribute| resolve_attribute_alias(attribute) } if @update_only
